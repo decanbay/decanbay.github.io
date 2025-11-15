@@ -74,12 +74,87 @@
             width: 100%;
         }
 
+        nav a.active {
+            color: #4a9eff;
+        }
+
+        nav a.active::after {
+            width: 100%;
+        }
+
         .container {
             position: relative;
             z-index: 1;
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 100px 40px 60px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: #4a9eff;
+            text-shadow: 0 0 20px rgba(74, 158, 255, 0.3);
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            color: #b0b0b0;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .project-card {
+            background: rgba(20, 20, 30, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(74, 158, 255, 0.5);
+            box-shadow: 0 12px 40px rgba(74, 158, 255, 0.2);
+        }
+
+        .project-card h2 {
+            color: #4a9eff;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .project-card .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tech-tag {
+            background: rgba(74, 158, 255, 0.2);
+            color: #4a9eff;
+            padding: 0.3rem 0.8rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(74, 158, 255, 0.3);
+        }
+
+        .project-card p {
+            color: #c0c0c0;
+            margin-bottom: 1.5rem;
         }
 
         .content-box {
@@ -144,179 +219,22 @@
 
     <nav>
         <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="#" data-page="home">Home</a></li>
+            <li><a href="#" data-page="portfolio">Portfolio</a></li>
         </ul>
     </nav>
 
-    <div class="container">
-        <div class="content-box">
-            <h1>Recipe for Red Pill</h1>
-            <p>Human consciousness and our inner experiences arise from complex biological information processing systems, like computer programs. Much like artificial intelligence, human consciousness does not exist beyond the material or physical realm. Our perception of an autonomous self, free will, and profound inner life is an evolutionary construct, a sophisticated illusion created by neural 'software' following genetic and memetic 'programming'.</p>
-            <p>From a cosmic perspective, nothing we think, feel, or experience truly 'matters'; these concepts of meaning, significance, and agency are compelling yet illusory constructs arising from biology, chemistry, and ultimately physics, rather than from any deeper transcendence. This situation presents a paradox: our apparent ability to rationally ponder and 'decide' is undermined by the determinism that precludes true free choices outside the physical truth of cause-and-effect. Even the conclusions questioning free will are themselves deterministic outputs.</p>
-
-            <h2>The Drive to Find Meaning</h2>
-            <p>Why do we have this drive to find meaning? It is simply a survival instinct. But why do we want to survive then, in the grand scheme of things, isn't it insignificant? Yes, it is. This drive is simply an undirected consequence of physical laws. Analogous to molecules forming stable conformations, early replicating molecular patterns that persisted and propagated were favoured by these laws, without any inherent intent. They did not 'want' to survive; they just did because of physics, not very different than interacting magnets. Some molecule combinations are more stable, and some combinations of these combinations are even more stable, and so on. The apparent drive towards complexity emerges as a natural consequence of physicochemical systems. This is what creates everything including us. Life is a blind, replicative force shaped by physical forces rather than foresight.</p>
-            <p>It is like a virus of physical laws, emerging from the chaos of the universe as certain chemicals and their combinations favour each other. We are a byproduct of the universe's laws. Ultimately, nothing we experience truly 'matters' outside the deterministic chain of physical causality. Emotions, ideals, and perceived choices are appealing ultimately serving to physics without cosmic transcendence.</p>
-            <p>Yet, even this revelation is just another domino in the chain of causality, highlighting the harsh reality of our existence, which I find humour and sorrow in its self-deprecation.</p>
-            <p>Choosing to live despite knowing this is showing respect to the physics which itself does not but is matter, literally.</p>
-        </div>
-
-        <div class="footer">
-            Deniz Ekin Canbay
-        </div>
+    <div class="container" id="app-container">
+        <!-- Content will be loaded dynamically by app.js -->
     </div>
 
     <div class="instructions">
-        <strong>Move mouse</strong> to push particles<br>
-        <strong>Right-click</strong> to add particles
+        <strong>Move mouse</strong> to repel particles<br>
+        <strong>Hold left-click</strong> to release particles<br>
+        <strong>Right-click</strong> to add particle burst<br>
     </div>
 
-    <script>
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
-
-        // Set canvas size
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        // Particle class
-        class Particle {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.vx = (Math.random() - 0.5) * 2;
-                this.vy = (Math.random() - 0.5) * 2;
-                this.radius = Math.random() * 3 + 2;
-                this.color = `rgba(74, 158, 255, ${Math.random() * 0.5 + 0.3})`;
-                this.mass = this.radius;
-            }
-
-            update() {
-                // Gravity
-                this.vy += 0.2;
-
-                // Apply velocity
-                this.x += this.vx;
-                this.y += this.vy;
-
-                // Friction
-                this.vx *= 0.99;
-                this.vy *= 0.99;
-
-                // Border collision with bounce
-                if (this.x - this.radius < 0) {
-                    this.x = this.radius;
-                    this.vx *= -0.7;
-                } else if (this.x + this.radius > canvas.width) {
-                    this.x = canvas.width - this.radius;
-                    this.vx *= -0.7;
-                }
-
-                if (this.y - this.radius < 0) {
-                    this.y = this.radius;
-                    this.vy *= -0.7;
-                } else if (this.y + this.radius > canvas.height) {
-                    this.y = canvas.height - this.radius;
-                    this.vy *= -0.7;
-                    // Extra friction when hitting ground
-                    this.vx *= 0.9;
-                }
-            }
-
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.fill();
-
-                // Glow effect
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = this.color;
-                ctx.fill();
-                ctx.shadowBlur = 0;
-            }
-
-            applyForce(fx, fy) {
-                this.vx += fx / this.mass;
-                this.vy += fy / this.mass;
-            }
-        }
-
-        // Initialize particles
-        const particles = [];
-        const maxParticles = 150;
-
-        // Create initial particles
-        for (let i = 0; i < 50; i++) {
-            particles.push(new Particle(
-                Math.random() * canvas.width,
-                Math.random() * canvas.height
-            ));
-        }
-
-        // Mouse interaction
-        const mouse = {
-            x: undefined,
-            y: undefined,
-            radius: 100
-        };
-
-        window.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-        });
-
-        // Right-click to add particles
-        canvas.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-
-            // Add multiple particles at once for better effect
-            for (let i = 0; i < 5; i++) {
-                if (particles.length < maxParticles) {
-                    particles.push(new Particle(
-                        e.clientX + (Math.random() - 0.5) * 20,
-                        e.clientY + (Math.random() - 0.5) * 20
-                    ));
-                }
-            }
-        });
-
-        // Animation loop
-        function animate() {
-            // Clear with fade effect for trails
-            ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            particles.forEach(particle => {
-                // Mouse repulsion force
-                if (mouse.x !== undefined && mouse.y !== undefined) {
-                    const dx = particle.x - mouse.x;
-                    const dy = particle.y - mouse.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < mouse.radius) {
-                        const force = (mouse.radius - distance) / mouse.radius;
-                        const angle = Math.atan2(dy, dx);
-                        particle.applyForce(
-                            Math.cos(angle) * force * 2,
-                            Math.sin(angle) * force * 2
-                        );
-                    }
-                }
-
-                particle.update();
-                particle.draw();
-            });
-
-            requestAnimationFrame(animate);
-        }
-
-        animate();
-    </script>
+    <script src="app.js"></script>
+    <script src="particles.js"></script>
 </body>
 </html>
