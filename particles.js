@@ -5,7 +5,7 @@ const ParticleSystem = (function() {
     let mouse = {
         x: undefined,
         y: undefined,
-        radius: 500,
+        radius: 100,
         isPressed: false // Track if left mouse button is held
     };
     const maxParticles = 5000;
@@ -19,9 +19,8 @@ const ParticleSystem = (function() {
             this.y = y;
             this.vx = vx !== null ? vx : (Math.random() - 0.5) * 2;
             this.vy = vy !== null ? vy : (Math.random() - 0.5) * 2;
-            this.radius = Math.random() * 3 + 2;
+            this.radius = Math.random() * 2 + 1;
 
-            // Enhanced color variety
             const colorVariant = Math.random();
             if (colorVariant < 0.6) {
                 this.color = `rgba(74, 158, 255, ${Math.random() * 0.5 + 0.5})`;
@@ -36,18 +35,14 @@ const ParticleSystem = (function() {
         }
 
         update() {
-            // Smoother gravity
-            this.vy += 0.15;
+            this.vy += 0.1;
 
-            // Apply velocity
             this.x += this.vx;
             this.y += this.vy;
 
-            // Air resistance
-            this.vx *= 0.995;
-            this.vy *= 0.995;
+            this.vx *= 0.99;
+            this.vy *= 0.99;
 
-            // Border collision with improved bounce physics
             if (this.x - this.radius < 0) {
                 this.x = this.radius;
                 this.vx *= -0.85;
@@ -61,9 +56,9 @@ const ParticleSystem = (function() {
                 this.vy *= -0.75;
             } else if (this.y + this.radius > canvas.height) {
                 this.y = canvas.height - this.radius;
-                this.vy *= -0.75;
+                this.vy *= -0.95;
                 // Ground friction
-                this.vx *= 0.92;
+                this.vx *= 0.7;
             }
         }
 
@@ -82,7 +77,6 @@ const ParticleSystem = (function() {
             this.vy += fy / this.mass;
         }
 
-        // Serialize particle for storage
         toJSON() {
             return {
                 x: this.x,
@@ -92,16 +86,13 @@ const ParticleSystem = (function() {
             };
         }
 
-        // Create particle from stored data
         static fromJSON(data, canvasWidth, canvasHeight) {
-            // Scale position based on canvas size change
             const x = data.x;
             const y = data.y;
             return new Particle(x, y, data.vx, data.vy);
         }
     }
 
-    // Draw connections between nearby particles
     function drawConnections() {
         for (let i = 0; i < particles.length; i++) {
             for (let j = i + 1; j < particles.length; j++) {
@@ -122,7 +113,6 @@ const ParticleSystem = (function() {
         }
     }
 
-    // Save particle state to localStorage
     function saveState() {
         try {
             const state = {
@@ -137,13 +127,11 @@ const ParticleSystem = (function() {
         }
     }
 
-    // Auto-save every 2 seconds
     let saveInterval;
     function startAutoSave() {
-        saveInterval = setInterval(saveState, 2000);
+        saveInterval = setInterval(saveState, 1000);
     }
 
-    // Load particle state from localStorage
     function loadState() {
         try {
             const stored = localStorage.getItem(STATE_KEY);
@@ -169,20 +157,17 @@ const ParticleSystem = (function() {
         }
     }
 
-    // Initialize particles
     function initParticles() {
         if (!loadState()) {
-            // Create initial particles from the top of the screen
             for (let i = 0; i < 50; i++) {
                 particles.push(new Particle(
                     Math.random() * canvas.width,
-                    Math.random() * -300 // Start above the screen
+                    Math.random() * -200
                 ));
             }
         }
     }
 
-    // Setup mouse interactions
     function setupMouseEvents() {
         window.addEventListener('mousemove', (e) => {
             mouse.x = e.clientX;
@@ -207,11 +192,10 @@ const ParticleSystem = (function() {
         canvas.addEventListener('contextmenu', (e) => {
             e.preventDefault();
 
-            // Add burst of particles
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 20; i++) {
                 if (particles.length < maxParticles) {
                     const angle = (Math.PI * 2 * i) / 50;
-                    const speed = Math.random() * 3 + 2;
+                    const speed = Math.random() * 2 + 1;
                     const particle = new Particle(
                         e.clientX + (Math.random() - 0.5) * 20,
                         e.clientY + (Math.random() - 0.5) * 20
@@ -223,7 +207,6 @@ const ParticleSystem = (function() {
             }
         });
 
-        // Save state when user leaves or switches tabs
         window.addEventListener('beforeunload', saveState);
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
@@ -232,22 +215,14 @@ const ParticleSystem = (function() {
         });
     }
 
-    // Resize canvas
     function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
     }
 
-    // Animation loop
     function animate() {
-        // Fade effect for smooth trails
         ctx.fillStyle = 'rgba(10, 10, 10, 0.3)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Draw connections first (behind particles)
-        if (particles.length < 150) { // Only draw connections when particle count is reasonable
-            drawConnections();
-        }
 
         // Update and draw particles
         particles.forEach(particle => {
@@ -263,8 +238,8 @@ const ParticleSystem = (function() {
 
                     // Repulsion with enhanced effect
                     particle.applyForce(
-                        Math.cos(angle) * force * -6,
-                        Math.sin(angle) * force * -25
+                        Math.cos(angle) * force * -100,
+                        Math.sin(angle) * force * -100
                     );
                 }
             }
@@ -295,7 +270,7 @@ const ParticleSystem = (function() {
         animate();
     }
 
-    // Expose public methods
+
     return {
         init: init
     };
